@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <stdarg.h>
-#include "utils.h"
 #include "libft.h"
 
 int		die(const char *fmt, ...)

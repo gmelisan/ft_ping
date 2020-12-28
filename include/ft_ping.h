@@ -15,7 +15,6 @@
 
 #include <sys/socket.h>
 # include "libft.h"
-# include "utils.h"
 
 # define DEFAULT_TTL			250
 
