@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 21:03:23 by gmelisan          #+#    #+#             */
-/*   Updated: 2020/12/15 21:28:34 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/06 21:53:21 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void		resolve4(const char *dst, struct sockaddr_in *out)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_RAW;
 	if (getaddrinfo(dst, NULL, &hints, &result) != 0)
-		die("getaddrinfo: error while resolving address");
+		fatal("getaddrinfo: error while resolving address '%s'", dst);
 	ai = result;
 	while (ai)
 	{
@@ -54,7 +54,7 @@ void		resolve6(const char *dst, struct sockaddr_in6 *out)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_RAW;
 	if (getaddrinfo(dst, NULL, &hints, &result) != 0)
-		die("getaddrinfo: error while resolving address");
+		fatal("getaddrinfo: error while resolving address '%s'", dst);
 	ai = result;
 	while (ai)
 	{

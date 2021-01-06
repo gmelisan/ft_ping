@@ -6,7 +6,7 @@
 #    By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 18:23:50 by gmelisan          #+#    #+#              #
-#    Updated: 2020/12/15 21:05:09 by gmelisan         ###   ########.fr        #
+#    Updated: 2021/01/06 21:27:33 by gmelisan         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,7 +18,7 @@ CC = @clang
 CFLAGS = -Wall -Wextra #-Werror
 
 OBJ = $(addprefix ./src/, \
-main.o utils.o resolve.o\
+main.o utils.o resolve.o icmp_chat.o ping.o\
 )
 
 all: $(NAME)
