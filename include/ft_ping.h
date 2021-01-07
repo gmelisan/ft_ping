@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 18:29:46 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/06 21:50:33 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/07 22:17:55 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <netinet/ip_icmp.h>
 # include <sys/socket.h>
 # include <errno.h>
+# include <signal.h>
+# include <sys/time.h>
 # include "libft.h"
 
 # define DEFAULT_TTL			250
@@ -35,7 +37,7 @@
 # define ushort					unsigned short
 # define uint					unsigned int
 
-extern struct	s_options
+struct			s_options
 {
 	int			c; // count pings
 	int			D; // print timestamp
@@ -43,8 +45,23 @@ extern struct	s_options
 	int			t; // TTL
 	int			v; // verbose
 	int			q; // quiet
-	int			exit_flag;
-}				g_options;
+};
+
+extern struct			s_global
+{
+	struct s_options	options;
+	int					sck;
+	char				*address_s;
+	char				*ip_s;
+	struct sockaddr_in	sa;
+	struct timeval		one_packet_time;
+	struct timeval		full_time;
+	int					transmitted;
+	int					received;
+	double				rtt_min;
+	double				rtt_max;
+	double				rtt_total;
+}						g_g;
 
 struct			s_icmp_packet
 {
@@ -64,10 +81,13 @@ int						send_icmp(int sck, struct sockaddr_in sa,
 								  struct s_icmp_packet pkt);
 int						receive_icmp(int sck, struct sockaddr_in sa,
 									 struct s_icmp_packet *pkt);
+int						check_icmps(const struct s_icmp_packet *send,
+									const struct s_icmp_packet *receive);
 
-int		ping(int sck, struct sockaddr_in sa, char *address, char *ip);
-
-
+int		open_socket();
+int		ping();
 char	*generate_icmp_data();
+void	timer_start(struct timeval *start_time);
+double	timer_stop(const struct timeval *start_time);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 19:40:19 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/06 21:45:19 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/07 21:34:41 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,19 @@
 
 int		info(const char *fmt, ...)
 {
+	struct timeval current_time;
 	va_list ap;
 
-	if (g_options.q)
+	if (g_g.options.q)
 		return (0);
 	va_start(ap, fmt);
-	ft_vfdprintf(2, fmt, ap);
-	ft_fdprintf(2, "\n");
+	if (g_g.options.D)
+	{
+		gettimeofday(&current_time, NULL);
+		ft_printf("[%ld.%ld] ", current_time.tv_sec, current_time.tv_usec);
+	}
+	ft_vprintf(fmt, ap);
+	ft_printf("\n");
 	va_end(ap);
 	return (0);
 }
@@ -31,7 +37,6 @@ int		error(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	ft_fdprintf(2, "error: ");
 	ft_vfdprintf(2, fmt, ap);
 	ft_fdprintf(2, "\n");
 	va_end(ap);
@@ -43,7 +48,6 @@ void	fatal(const char *fmt, ...)
 	va_list ap;
 
 	va_start(ap, fmt);
-	ft_fdprintf(2, "fatal: ");
 	ft_vfdprintf(2, fmt, ap);
 	ft_fdprintf(2, "\n");
 	va_end(ap);

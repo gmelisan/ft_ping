@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/06 20:38:11 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/06 21:39:28 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/07 22:46:53 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,11 @@ int						send_icmp(int sck, struct sockaddr_in sa,
 		return (error("sendto(): %s", strerror(errno)));
 	if (ret < ICMP_PACKET_SIZE)
 		return (error("sendto(): sended incomplete data"));
-	//ft_printf("send: type %d, code %d, id %d, seq %d, data %s\n",
-	//		  pkt.header.type, pkt.header.code, pkt.header.un.echo.id,
-	//		  pkt.header.un.echo.sequence, pkt.data);
-	//ft_printf("%d bytes sent\n", ret);
+	if (g_g.options.v)
+		ft_printf("-> type %d, code %d, id %d, seq %d, chk %d, data %s\n",
+			  pkt.header.type, pkt.header.code, pkt.header.un.echo.id,
+			  pkt.header.un.echo.sequence, pkt.header.checksum, pkt.data);
+	
 	return (ret);
 }
 
@@ -81,12 +82,36 @@ int						receive_icmp(int sck, struct sockaddr_in sa,
 	msg.msg_iovlen = 1;
 	ret = recvmsg(sck, &msg, 0);
 	if (ret < 0)
-		return (error("recvmsg(): %s\n", strerror(errno)));
+		return (errno == EAGAIN ? 0 : error("recvmsg(): %s (%d)", strerror(errno), errno));
 	if (ret != ICMP_PACKET_SIZE + IP_HEADER_SIZE)
-		return (error("recvmsg(): received wrong number of bytes"));
+		return (error("recvmsg(): received wrong number of bytes (%d/%d)",
+					  ret, ICMP_PACKET_SIZE + IP_HEADER_SIZE));
 	*pkt = *(struct s_icmp_packet *)(buf + IP_HEADER_SIZE);
-	//ft_printf("rcv: type %d, code %d, id %d, seq %d, data %s\n",
-	//		  pkt->header.type, pkt->header.code, pkt->header.un.echo.id,
-	//		  pkt->header.un.echo.sequence, pkt->data);
+	if (g_g.options.v)
+		ft_printf("<- type %d, code %d, id %d, seq %d, chk %d, data %s\n",
+			  pkt->header.type, pkt->header.code, pkt->header.un.echo.id,
+				  pkt->header.un.echo.sequence, pkt->header.checksum, pkt->data);
 	return (ICMP_PACKET_SIZE);
+}
+
+int						check_icmps(const struct s_icmp_packet *send,
+									const struct s_icmp_packet *receive)
+{
+	struct s_icmp_packet receive_without_checksum;
+	ushort chksum;
+
+	ft_memcpy(&receive_without_checksum, receive, sizeof(*receive));
+	receive_without_checksum.header.checksum = 0;
+	chksum = get_checksum(&receive_without_checksum, sizeof(*receive));
+	if (send->header.type == ICMP_ECHO
+		&& receive->header.type == ICMP_ECHOREPLY
+		&& send->header.un.echo.sequence == receive->header.un.echo.sequence
+		&& send->header.un.echo.id == receive->header.un.echo.id
+		&& receive->header.checksum == chksum
+		&& ft_memcmp(send->data, receive->data, ICMP_DATA_SIZE) == 0)
+		return (1);
+	if (g_g.options.v)
+		ft_printf("  Contents of sended and received packets not match "
+					"or wrong checksum!\n");
+	return (0);
 }
