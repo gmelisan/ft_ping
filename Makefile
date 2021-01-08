@@ -6,7 +6,7 @@
 #    By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/15 18:23:50 by gmelisan          #+#    #+#              #
-#    Updated: 2021/01/07 20:02:58 by gmelisan         ###   ########.fr        #
+#    Updated: 2021/01/08 16:02:55 by gmelisan         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -15,11 +15,10 @@ NAME = ft_ping
 LIBFT = ./libft
 
 CC = @clang
-CFLAGS = -Wall -Wextra #-Werror
-CFLAGS += -g
+CFLAGS = -Wall -Wextra -Werror
 
 OBJ = $(addprefix ./src/, \
-main.o utils.o resolve.o icmp_chat.o ping.o timer.o\
+main.o utils.o resolve.o icmp_chat.o ping.o ping2.o timer.o\
 )
 
 all: $(NAME)

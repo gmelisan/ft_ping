@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 18:30:07 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/07 22:59:15 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/08 15:25:40 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ static int		print_help(int ret)
 											"packets. Default 0 (infinite)");
 	ft_printf("  %-20s%s\n", "-D", "print timestamps");
 	ft_printf("  %-20s%s\n", "-h", "print help and exit");
-	ft_printf("  %-20s%s\n", "-i [interval]", "set inteval between pings (default 1)");
+	ft_printf("  %-20s%s\n", "-i [interval]", "set inteval between pings "
+				"(default 1)");
 	ft_printf("  %-20s%s\n", "-q", "quiet mode: nothing is displayed except "
 									"summary lines");
 	ft_printf("  %-20s%s\n", "-t [TTL]", "set time to live value");
@@ -42,7 +43,7 @@ static int		enable_option(char o)
 	if (o == 'c')
 		g_g.options.c = ft_atoi(g_optarg);
 	else if (o == 'D')
-		g_g.options.D = 1;
+		g_g.options.d_big = 1;
 	else if (o == 'i')
 		g_g.options.i = ft_atoi(g_optarg);
 	else if (o == 't')
@@ -80,22 +81,24 @@ static int		parse_options(int argc, char **argv)
 	return (0);
 }
 
-int				open_socket()
+int				open_socket(void)
 {
-	int sck;
-	struct timeval tv_out;
+	int				sck;
+	struct timeval	tv_out;
+
 	tv_out.tv_sec = RECV_TIMEOUT;
 	tv_out.tv_usec = 0;
-	
-	sck = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP); // need CAP_NET_RAW
+	sck = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	if (sck < 0)
 	{
 		fatal("Can't open socket: %s%s", strerror(errno),
 				getuid() != 0 ? " (try use sudo)" : "");
 	}
-	if (setsockopt(sck, SOL_IP, IP_TTL, &g_g.options.t, sizeof(g_g.options.t)) < 0)
+	if (setsockopt(sck, SOL_IP, IP_TTL, &g_g.options.t,
+						sizeof(g_g.options.t)) < 0)
 		fatal("Can't setup socket (ttl): %s", strerror(errno));
-	if (setsockopt(sck, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv_out, sizeof(tv_out)) < 0)
+	if (setsockopt(sck, SOL_SOCKET, SO_RCVTIMEO,
+						(const char *)&tv_out, sizeof(tv_out)) < 0)
 		fatal("Can't setup socket (timeout): %s", strerror(errno));
 	return (sck);
 }
@@ -105,7 +108,7 @@ int				main(int argc, char **argv)
 	char str[100];
 
 	if (parse_options(argc, argv) == -1)
-		return 1;
+		return (1);
 	if (g_optind >= argc)
 		fatal("usage error: Destination address required");
 	if (g_g.options.i <= 0)
@@ -116,6 +119,6 @@ int				main(int argc, char **argv)
 	g_g.ip_s = str;
 	g_g.sck = open_socket();
 	ft_printf("PING %s (%s) %d(%d) bytes of data.\n", argv[g_optind], str,
-			  ICMP_DATA_SIZE, ICMP_PACKET_SIZE + IP_HEADER_SIZE);
+				ICMP_DATA_SIZE, ICMP_PACKET_SIZE + IP_HEADER_SIZE);
 	return (ping());
 }

@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 19:40:19 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/07 21:34:41 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/08 15:57:57 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 
 int		info(const char *fmt, ...)
 {
-	struct timeval current_time;
-	va_list ap;
+	struct timeval	current_time;
+	va_list			ap;
 
 	if (g_g.options.q)
 		return (0);
 	va_start(ap, fmt);
-	if (g_g.options.D)
+	if (g_g.options.d_big)
 	{
 		gettimeofday(&current_time, NULL);
 		ft_printf("[%ld.%ld] ", current_time.tv_sec, current_time.tv_usec);
@@ -34,7 +34,7 @@ int		info(const char *fmt, ...)
 
 int		error(const char *fmt, ...)
 {
-	va_list ap;
+	va_list	ap;
 
 	va_start(ap, fmt);
 	ft_vfdprintf(2, fmt, ap);
@@ -54,10 +54,10 @@ void	fatal(const char *fmt, ...)
 	exit(1);
 }
 
-char	*generate_icmp_data()
+char	*generate_icmp_data(void)
 {
-	static char buf[ICMP_DATA_SIZE];
-	size_t i;
+	static char	buf[ICMP_DATA_SIZE];
+	size_t		i;
 
 	if (*buf)
 		return (buf);
