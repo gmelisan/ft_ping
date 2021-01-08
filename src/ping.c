@@ -6,19 +6,11 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/06 20:58:29 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/08 15:53:41 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/08 17:11:52 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
-
-static void	sigh_int(int n)
-{
-	(void)n;
-	alarm(0);
-	close(g_g.sck);
-	print_stat_and_exit();
-}
 
 static void	save_rtt(double elapsed)
 {
@@ -27,6 +19,16 @@ static void	save_rtt(double elapsed)
 	if (g_g.rtt_max < 0 || elapsed > g_g.rtt_max)
 		g_g.rtt_max = elapsed;
 	g_g.rtt_total += elapsed;
+}
+
+static void	print_message(int ret, int seq, double elapsed)
+{
+	if (ft_strequ(g_g.address_s, g_g.ip_s))
+		info("%d bytes from %s: icmp_seq=%d ttl=%d time=%.1f ms",
+				ret, g_g.ip_s, seq, g_g.options.t, elapsed);
+	else
+		info("%d bytes from %s (%s): icmp_seq=%d ttl=%d time=%.1f ms",
+				ret, g_g.address_s, g_g.ip_s, seq, g_g.options.t, elapsed);
 }
 
 static void	perform_ping(int seq)
@@ -47,8 +49,7 @@ static void	perform_ping(int seq)
 			ret = -1;
 		if (ret > 0)
 		{
-			info("%d bytes from %s (%s): icmp_seq=%d ttl=%d time=%.1f ms",
-					ret, g_g.address_s, g_g.ip_s, seq, g_g.options.t, elapsed);
+			print_message(ret, seq, elapsed);
 			save_rtt(elapsed);
 			++g_g.received;
 		}

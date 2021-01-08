@@ -6,11 +6,19 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 15:53:14 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/08 15:53:50 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/08 16:40:06 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ping.h"
+
+void	sigh_int(int n)
+{
+	(void)n;
+	alarm(0);
+	close(g_g.sck);
+	print_stat_and_exit();
+}
 
 void	print_stat_and_exit(void)
 {

@@ -6,7 +6,7 @@
 /*   By: gmelisan <gmelisan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/15 18:29:46 by gmelisan          #+#    #+#             */
-/*   Updated: 2021/01/08 16:00:56 by gmelisan         ###   ########.fr       */
+/*   Updated: 2021/01/08 17:12:16 by gmelisan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,5 +91,7 @@ void							print_stat_and_exit(void);
 char							*generate_icmp_data(void);
 void							timer_start(struct timeval *start_time);
 double							timer_stop(const struct timeval *start_time);
+
+void							sigh_int(int n);
 
 #endif
